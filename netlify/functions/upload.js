@@ -38,15 +38,18 @@ exports.handler = async (event) => {
         }
 
         // Gunakan formidable untuk memproses data multipart
-        const form = formidable({
+        // Perbaikan: gunakan constructor Formidable secara eksplisit
+        const form = new formidable.Formidable({
             keepExtensions: true,
             maxFileSize: 5 * 1024 * 1024 // Batas ukuran file 5MB
         });
         
         // Parsing request body
         const { fields, files } = await new Promise((resolve, reject) => {
-            const tempFilePath = `/tmp/${Math.random().toString(36).substring(7)}.txt`;
+            // Netlify Function hanya bisa menyimpan data sementara di folder /tmp
+            const tempFilePath = path.join('/tmp', `upload-${Date.now()}`);
             fs.writeFileSync(tempFilePath, event.body, 'base64');
+            
             form.parse({ headers: event.headers, ...event }, (err, fields, files) => {
                 if (err) {
                     return reject(err);
@@ -55,7 +58,8 @@ exports.handler = async (event) => {
                 resolve({ fields, files });
             });
         });
-
+        
+        // Formidable versi 3.x mengembalikan array, jadi kita ambil elemen pertama
         const apiKey = fields.apiKey?.[0];
         const userId = fields.userId?.[0];
         const displayName = fields.displayName?.[0];
@@ -142,4 +146,5 @@ exports.handler = async (event) => {
         };
     }
 };
+
 

@@ -8,85 +8,181 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
+        .highlight {
+            background-color: rgba(255, 255, 0, 0.1);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 0, 0.2);
+        }
+        .bg-important {
+            background-color: rgba(239, 68, 68, 0.2); /* Warna merah semi-transparan */
+            border-color: rgba(239, 68, 68, 0.4);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-2xl bg-gray-800 rounded-2xl shadow-xl p-8 space-y-8">
         <h1 class="text-3xl font-bold text-center text-blue-400">Roblox Asset Uploader</h1>
-        
-        <!-- Bagian Input API Key dan User ID -->
-        <section class="space-y-4">
-            <h2 class="text-xl font-semibold text-gray-200">Kredensial</h2>
-            <p class="text-sm text-gray-400">
-                Data akan dikirim ke backend Anda, bukan langsung ke Roblox API.
-            </p>
-            <div class="flex flex-col md:flex-row gap-4 items-center">
-                <div class="flex-1 w-full">
-                    <label for="apiKey" class="block text-sm font-medium text-gray-300">Roblox Open Cloud API Key</label>
-                    <input type="password" id="apiKey" placeholder="Masukkan API Key"
-                           class="mt-1 block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-100">
+
+        <!-- Container untuk Tampilan Kredensial -->
+        <div id="credentials-view" class="space-y-8">
+            <section class="space-y-4">
+                <h2 class="text-xl font-semibold text-gray-200">Kredensial Roblox</h2>
+                <p class="text-sm text-gray-400">
+                    Masukkan API Key dan User ID Anda untuk memulai. Data ini hanya akan disimpan di browser Anda.
+                </p>
+                <div class="flex flex-col md:flex-row gap-4 items-center">
+                    <div class="flex-1 w-full">
+                        <label for="apiKey" class="block text-sm font-medium text-gray-300">Roblox Open Cloud API Key</label>
+                        <input type="password" id="apiKey" placeholder="Masukkan API Key"
+                               class="mt-1 block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-100">
+                    </div>
+                    <div class="flex-1 w-full">
+                        <label for="userId" class="block text-sm font-medium text-gray-300">Roblox User ID</label>
+                        <input type="text" id="userId" placeholder="Masukkan User ID"
+                               class="mt-1 block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-100">
+                    </div>
                 </div>
-                <div class="flex-1 w-full">
-                    <label for="userId" class="block text-sm font-medium text-gray-300">Roblox User ID</label>
-                    <input type="text" id="userId" placeholder="Masukkan User ID"
-                           class="mt-1 block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-100">
+                <div class="flex justify-between items-center flex-wrap gap-2">
+                    <button id="showApiKeyTutorialBtn"
+                            class="px-4 py-2 bg-gray-700 text-white font-medium rounded-lg shadow-md hover:bg-gray-600 transition duration-300">
+                        Cara Membuat API Key
+                    </button>
+                    <button id="showUserIdTutorialBtn"
+                            class="px-4 py-2 bg-gray-700 text-white font-medium rounded-lg shadow-md hover:bg-gray-600 transition duration-300">
+                        Cara Mendapatkan User ID
+                    </button>
                 </div>
-            </div>
-            <div class="flex justify-end gap-2">
                 <button id="saveCredentials"
-                        class="px-4 py-2 bg-green-600 text-white font-medium rounded-lg shadow-md hover:bg-green-700 transition duration-300">
-                    Simpan
+                        class="w-full py-3 bg-green-600 text-white font-bold rounded-lg shadow-lg hover:bg-green-700 transition duration-300 transform hover:scale-105">
+                    Simpan & Lanjutkan
                 </button>
-                <button id="deleteCredentials"
-                        class="px-4 py-2 bg-red-600 text-white font-medium rounded-lg shadow-md hover:bg-red-700 transition duration-300">
-                    Hapus
+            </section>
+            
+            <hr class="border-gray-700">
+
+            <!-- Tutorial API Key (sembunyi secara default) -->
+            <section id="apiKeyTutorial" class="space-y-4 hidden">
+                <h2 class="text-xl font-semibold text-gray-200">Tutorial: Cara Membuat API Key</h2>
+                <div class="highlight text-gray-200 space-y-2">
+                    <div class="bg-important">
+                        <p class="font-bold text-lg">Penting:</p>
+                        <p class="text-sm">
+                            Pastikan Anda memberikan izin yang benar agar pengunggah ini dapat berfungsi dengan baik.
+                        </p>
+                    </div>
+                    <p class="text-sm">
+                        Ikuti langkah-langkah ini untuk mendapatkan API Key yang benar:
+                    </p>
+                    <ol class="list-decimal list-inside space-y-1 text-sm">
+                        <li>
+                            Pastikan Anda sudah login dengan akun Roblox Anda, lalu klik tautan ini:
+                            <a href="https://create.roblox.com/dashboard/credentials?activeTab=ApiKeysTab" target="_blank" class="text-blue-400 hover:text-blue-300 underline">
+                                https://create.roblox.com/dashboard/credentials?activeTab=ApiKeysTab
+                            </a>
+                        </li>
+                        <li>Klik "Create API Key".</li>
+                        <li>Pada bagian "Access Permissions", pilih "Assets".</li>
+                        <li>Untuk setiap izin (permission) di bawah "Assets", pastikan Anda memilih:
+                            <ul class="list-disc list-inside ml-4 mt-1">
+                                <li><code>asset:read</code></li>
+                                <li><code>asset:write</code></li>
+                            </ul>
+                        </li>
+                        <li>Untuk "Expiration", Anda bisa memilih "No Expiration" atau mengatur kadaluarsa sesuai kebutuhan.</li>
+                        <li>Setelah selesai, klik "Create" untuk mendapatkan API Key Anda.</li>
+                    </ol>
+                </div>
+                <button id="closeApiKeyTutorialBtn"
+                        class="w-full py-2 bg-gray-700 text-white font-bold rounded-lg shadow-lg hover:bg-gray-600 transition duration-300">
+                    Kembali
                 </button>
-            </div>
-        </section>
+            </section>
 
-        <hr class="border-gray-700">
-
-        <!-- Bagian Unggah File -->
-        <section class="space-y-4">
-            <h2 class="text-xl font-semibold text-gray-200">Unggah Aset</h2>
-            <div>
-                <label for="fileInput" class="block text-sm font-medium text-gray-300">Pilih file PNG/JPG</label>
-                <input type="file" id="fileInput" multiple accept="image/png,image/jpeg"
-                       class="mt-1 block w-full text-sm text-gray-400
-                              file:mr-4 file:py-2 file:px-4
-                              file:rounded-lg file:border-0
-                              file:text-sm file:font-semibold
-                              file:bg-blue-500 file:text-white
-                              hover:file:bg-blue-600 cursor-pointer">
-            </div>
-            <div class="flex gap-4">
-                <div class="flex-1">
-                    <label for="displayName" class="block text-sm font-medium text-gray-300">Nama Tampilan</label>
-                    <input type="text" id="displayName" placeholder="Nama (kosong = random)"
-                           class="mt-1 block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-100">
+            <!-- Tutorial User ID (sembunyi secara default) -->
+            <section id="userIdTutorial" class="space-y-4 hidden">
+                <h2 class="text-xl font-semibold text-gray-200">Tutorial: Cara Mendapatkan User ID</h2>
+                <div class="highlight text-gray-200 space-y-2">
+                    <p class="text-sm">
+                        Anda dapat menemukan User ID dari URL profil Roblox Anda.
+                    </p>
+                    <ol class="list-decimal list-inside space-y-1 text-sm">
+                        <li>Klik tautan ini untuk pergi ke profil Anda:
+                            <a href="https://www.roblox.com/id/users/profile" target="_blank" class="text-blue-400 hover:text-blue-300 underline">
+                                https://www.roblox.com/id/users/profile
+                            </a>
+                        </li>
+                        <li>
+                            Lihat URL pada browser Anda. User ID adalah angka yang berada setelah `users/`.
+                        </li>
+                        <li>
+                            Contoh: Jika URL-nya adalah
+                            <code class="block mt-1 px-2 py-1 bg-gray-700 rounded-md break-all">
+                                https://www.roblox.com/id/users/7073731846/profile
+                            </code>
+                            maka User ID Anda adalah `7073731846`.
+                        </li>
+                    </ol>
                 </div>
-                <div class="flex-1">
-                    <label for="description" class="block text-sm font-medium text-gray-300">Deskripsi</label>
-                    <input type="text" id="description" placeholder="Deskripsi (kosong = random)"
-                           class="mt-1 block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-100">
+                <button id="closeUserIdTutorialBtn"
+                        class="w-full py-2 bg-gray-700 text-white font-bold rounded-lg shadow-lg hover:bg-gray-600 transition duration-300">
+                    Kembali
+                </button>
+            </section>
+        </div>
+
+        <!-- Container untuk Tampilan Unggahan -->
+        <div id="uploader-view" class="space-y-8 hidden">
+            <!-- Bagian Unggah File -->
+            <section class="space-y-4">
+                <h2 class="text-xl font-semibold text-gray-200">Unggah Aset</h2>
+                <div>
+                    <label for="fileInput" class="block text-sm font-medium text-gray-300">Pilih file PNG/JPG</label>
+                    <input type="file" id="fileInput" multiple accept="image/png,image/jpeg"
+                           class="mt-1 block w-full text-sm text-gray-400
+                                  file:mr-4 file:py-2 file:px-4
+                                  file:rounded-lg file:border-0
+                                  file:text-sm file:font-semibold
+                                  file:bg-blue-500 file:text-white
+                                  hover:file:bg-blue-600 cursor-pointer">
                 </div>
-            </div>
-            <button id="uploadButton"
-                    class="w-full py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105">
-                Mulai Unggah
-            </button>
-        </section>
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label for="displayName" class="block text-sm font-medium text-gray-300">Nama Tampilan</label>
+                        <input type="text" id="displayName" placeholder="Nama (kosong = random)"
+                               class="mt-1 block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-100">
+                    </div>
+                    <div class="flex-1">
+                        <label for="description" class="block text-sm font-medium text-gray-300">Deskripsi</label>
+                        <input type="text" id="description" placeholder="Deskripsi (kosong = random)"
+                               class="mt-1 block w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-100">
+                    </div>
+                </div>
+                <button id="uploadButton"
+                        class="w-full py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105">
+                    Mulai Unggah
+                </button>
+            </section>
+    
+            <hr class="border-gray-700">
+    
+            <!-- Bagian Log dan Status -->
+            <section class="space-y-4">
+                <h2 class="text-xl font-semibold text-gray-200">Log Unggahan</h2>
+                <div id="logContainer" class="bg-gray-900 rounded-lg p-4 h-64 overflow-y-auto border border-gray-700 text-sm">
+                    <p class="text-gray-500">Log akan ditampilkan di sini...</p>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button id="deleteCredentials"
+                            class="px-4 py-2 bg-red-600 text-white font-medium rounded-lg shadow-md hover:bg-red-700 transition duration-300">
+                        Hapus API Key & ID
+                    </button>
+                </div>
+            </section>
+        </div>
 
-        <hr class="border-gray-700">
-
-        <!-- Bagian Log dan Status -->
-        <section class="space-y-4">
-            <h2 class="text-xl font-semibold text-gray-200">Log Unggahan</h2>
-            <div id="logContainer" class="bg-gray-900 rounded-lg p-4 h-64 overflow-y-auto border border-gray-700 text-sm">
-                <p class="text-gray-500">Log akan ditampilkan di sini...</p>
-            </div>
-        </section>
-        
         <!-- Modal untuk Alert -->
         <div id="alertModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4">
             <div class="bg-gray-800 p-6 rounded-lg shadow-xl max-w-sm w-full text-center space-y-4">
@@ -94,12 +190,13 @@
                 <button id="alertClose" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Tutup</button>
             </div>
         </div>
-
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Element HTML
+            const credentialsView = document.getElementById('credentials-view');
+            const uploaderView = document.getElementById('uploader-view');
             const apiKeyInput = document.getElementById('apiKey');
             const userIdInput = document.getElementById('userId');
             const saveCredentialsBtn = document.getElementById('saveCredentials');
@@ -112,6 +209,14 @@
             const alertModal = document.getElementById('alertModal');
             const alertMessage = document.getElementById('alertMessage');
             const alertCloseBtn = document.getElementById('alertClose');
+            
+            // Tutorial buttons
+            const showApiKeyTutorialBtn = document.getElementById('showApiKeyTutorialBtn');
+            const closeApiKeyTutorialBtn = document.getElementById('closeApiKeyTutorialBtn');
+            const apiKeyTutorial = document.getElementById('apiKeyTutorial');
+            const showUserIdTutorialBtn = document.getElementById('showUserIdTutorialBtn');
+            const closeUserIdTutorialBtn = document.getElementById('closeUserIdTutorialBtn');
+            const userIdTutorial = document.getElementById('userIdTutorial');
             
             // Konfigurasi backend (URL Netlify Function)
             const BACKEND_URL = '/.netlify/functions/upload';
@@ -133,19 +238,47 @@
                 logContainer.scrollTop = logContainer.scrollHeight;
             };
 
-            // ====== Kelola Kredensial di Local Storage ======
-            const loadCredentials = () => {
+            // Fungsi untuk menampilkan atau menyembunyikan tampilan utama
+            const showUploaderView = () => {
+                credentialsView.classList.add('hidden');
+                uploaderView.classList.remove('hidden');
+            };
+
+            const showCredentialsView = () => {
+                uploaderView.classList.add('hidden');
+                credentialsView.classList.remove('hidden');
+                // Sembunyikan tutorial jika ada saat kembali ke halaman kredensial
+                apiKeyTutorial.classList.add('hidden');
+                userIdTutorial.classList.add('hidden');
+            };
+
+            // Cek kredensial saat halaman dimuat
+            const checkCredentialsAndRender = () => {
                 const storedApiKey = localStorage.getItem('robloxApiKey');
                 const storedUserId = localStorage.getItem('robloxUserId');
-                if (storedApiKey) {
-                    apiKeyInput.value = storedApiKey;
-                    apiKeyInput.type = 'password';
-                }
-                if (storedUserId) {
-                    userIdInput.value = storedUserId;
+                if (storedApiKey && storedUserId) {
+                    showUploaderView();
+                } else {
+                    showCredentialsView();
                 }
             };
+
+            // === Listener untuk tombol tutorial ===
+            showApiKeyTutorialBtn.addEventListener('click', () => {
+                apiKeyTutorial.classList.remove('hidden');
+            });
+            closeApiKeyTutorialBtn.addEventListener('click', () => {
+                apiKeyTutorial.classList.add('hidden');
+            });
+
+            showUserIdTutorialBtn.addEventListener('click', () => {
+                userIdTutorial.classList.remove('hidden');
+            });
+            closeUserIdTutorialBtn.addEventListener('click', () => {
+                userIdTutorial.classList.add('hidden');
+            });
             
+            // ====== Kelola Kredensial di Local Storage ======
             saveCredentialsBtn.addEventListener('click', () => {
                 const key = apiKeyInput.value.trim();
                 const id = userIdInput.value.trim();
@@ -153,7 +286,7 @@
                     localStorage.setItem('robloxApiKey', key);
                     localStorage.setItem('robloxUserId', id);
                     showMessage('Kredensial berhasil disimpan!');
-                    loadCredentials();
+                    checkCredentialsAndRender();
                 } else {
                     showMessage('API Key dan User ID tidak boleh kosong.');
                 }
@@ -164,8 +297,8 @@
                 localStorage.removeItem('robloxUserId');
                 apiKeyInput.value = '';
                 userIdInput.value = '';
-                apiKeyInput.type = 'password';
-                showMessage('Kredensial berhasil dihapus.');
+                showMessage('Kredensial berhasil dihapus. Kembali ke halaman utama.');
+                checkCredentialsAndRender();
             });
 
             // ====== Logika Unggahan ======
@@ -185,7 +318,7 @@
 
                 uploadButton.disabled = true;
                 logContainer.innerHTML = '';
-                log('Memulai proses unggah melalui Netlify Function...', 'text-blue-400');
+                log('Memulai proses unggah...', 'text-blue-400');
                 
                 try {
                     for (let i = 0; i < files.length; i++) {
@@ -193,7 +326,7 @@
                         const finalDisplayName = displayName || random5Char();
                         const finalDescription = description || random5Char();
 
-                        log(`[${i + 1}/${files.length}] Mengunggah "${file.name}"...`, 'text-yellow-400');
+                        log(`[${i + 1}/${files.length}] Unggah "${file.name}"...`, 'text-yellow-400');
                         
                         const formData = new FormData();
                         formData.append('apiKey', apiKey);
@@ -209,19 +342,16 @@
                         
                         const data = await res.json();
 
+                        // Log murni dari respons debugging
                         if (res.ok) {
-                            if (data.status === 'success') {
-                                log(`✅ Unggahan ${file.name} berhasil!`, 'text-green-400');
-                                log(`   Asset ID: ${data.assetId}`);
-                                log(`   Nama: ${data.name}`);
-                            } else {
-                                log(`❌ Unggahan ${file.name} gagal.`, 'text-red-400');
-                                log(`   Pesan: ${data.message || 'Kesalahan tidak diketahui'}`, 'text-red-400');
+                            log(`- Status: ${res.status}`);
+                            log(`- Response: ${JSON.stringify(data, null, 2)}`);
+                            if (data.assetId) {
+                                log(`✅ Unggahan ${file.name} berhasil! Asset ID: ${data.assetId}`, 'text-green-400');
                             }
                         } else {
-                            log(`❌ Unggahan ${file.name} gagal.`, 'text-red-400');
-                            log(`   Status: ${res.status}`, 'text-red-400');
-                            log(`   Pesan: ${data.message || 'Kesalahan backend tidak diketahui'}`, 'text-red-400');
+                            log(`- Status: ${res.status}`, 'text-red-400');
+                            log(`- Response: ${JSON.stringify(data, null, 2)}`, 'text-red-400');
                         }
 
                         // Jeda singkat antar unggahan
@@ -233,14 +363,16 @@
                     log('\nSemua unggahan selesai!', 'text-blue-400');
 
                 } catch (error) {
-                    log(`Terjadi kesalahan: ${error.message}`, 'text-red-400');
+                    log(`- Status: 500 (Client-side)`);
+                    log(`- Response: ${error.message}`, 'text-red-400');
                     showMessage(`Terjadi kesalahan: ${error.message}`);
                 } finally {
                     uploadButton.disabled = false;
                 }
             });
 
-            loadCredentials();
+            // Jalankan fungsi saat halaman dimuat
+            checkCredentialsAndRender();
         });
     </script>
 </body>
