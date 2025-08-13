@@ -4,6 +4,7 @@
 const fetch = require('node-fetch');
 const FormData = require('form-data');
 const formidable = require('formidable');
+const { Readable } = require('stream'); // Import Readable stream
 const fs = require('fs');
 const path = require('path');
 
@@ -36,29 +37,29 @@ exports.handler = async (event) => {
                 body: JSON.stringify({ status: 'error', message: 'Metode tidak diizinkan.' })
             };
         }
-
-        // Gunakan formidable untuk memproses data multipart
-        // Perbaikan: gunakan constructor Formidable secara eksplisit
+        
+        // Logika untuk Netlify Function yang menerima body Base64
         const form = new formidable.Formidable({
             keepExtensions: true,
-            maxFileSize: 5 * 1024 * 1024 // Batas ukuran file 5MB
+            maxFileSize: 5 * 1024 * 1024, // Batas ukuran file 5MB
+            multiples: false // Hanya memproses satu file per request
         });
-        
-        // Parsing request body
-        const { fields, files } = await new Promise((resolve, reject) => {
-            // Netlify Function hanya bisa menyimpan data sementara di folder /tmp
-            const tempFilePath = path.join('/tmp', `upload-${Date.now()}`);
-            fs.writeFileSync(tempFilePath, event.body, 'base64');
-            
-            form.parse({ headers: event.headers, ...event }, (err, fields, files) => {
-                if (err) {
-                    return reject(err);
-                }
-                fs.unlinkSync(tempFilePath); // Bersihkan file sementara
-                resolve({ fields, files });
-            });
-        });
-        
+
+        // Membuat Readable stream dari event.body (yang sudah di-Base64-encode)
+        // Ini adalah perbaikan utama untuk mengatasi "req.on is not a function"
+        const reqStream = new Readable();
+        reqStream.push(Buffer.from(event.body, 'base64'));
+        reqStream.push(null); // Menandakan akhir stream
+
+        // Membuat objek "request" tiruan yang dibutuhkan oleh formidable
+        const mockRequest = {
+            headers: event.headers,
+            ...reqStream
+        };
+
+        // Menggunakan formidable untuk mem-parsing body dari stream
+        const [fields, files] = await form.parse(mockRequest);
+
         // Formidable versi 3.x mengembalikan array, jadi kita ambil elemen pertama
         const apiKey = fields.apiKey?.[0];
         const userId = fields.userId?.[0];
@@ -146,5 +147,4 @@ exports.handler = async (event) => {
         };
     }
 };
-
 
