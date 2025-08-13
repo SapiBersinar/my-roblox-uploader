@@ -1,4 +1,4 @@
 [build]
   command = "npm install"
   functions = "netlify/functions"
-  publish = "public" # atau hapus baris ini kalau tidak ada frontend
+  publish = "." # atau hapus baris ini kalau tidak ada frontend
